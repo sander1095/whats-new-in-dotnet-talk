@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple SSE Demo - Random Numbers</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .number-display {
+            font-size: 48px;
+            font-weight: bold;
+            color: #007acc;
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+        .number-display.updated {
+            background: #e3f2fd;
+            transform: scale(1.05);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .connected { background: #d4edda; color: #155724; }
+        .disconnected { background: #f8d7da; color: #721c24; }
+        .code-example {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        .nav-link {
+            display: inline-block;
+            margin: 10px 0;
+            padding: 10px 20px;
+            background: #007acc;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .nav-link:hover {
+            background: #005a9e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 Simple Server-Sent Events Demo</h1>
+        <p>This is the simplest possible SSE implementation using ASP.NET Core 10. The server sends a random number every second.</p>
+        
+        <div id="status" class="status disconnected">Disconnected</div>
+        
+        <div class="number-display" id="numberDisplay">
+            Waiting for connection...
+        </div>
+        
+        <div>
+            <strong>Received Numbers:</strong> <span id="count">0</span>
+        </div>
+        
+        <h2>📝 How It Works</h2>
+        
+        <h3>1. Server-Side (ASP.NET Core 10)</h3>
+        <div class="code-example">
+// Simple SSE endpoint
+app.MapGet("/api/randomnumbers", (CancellationToken ct) =>
+{
+    return TypedResults.ServerSentEvents(GenerateRandomNumbers(ct));
+});
+
+static async IAsyncEnumerable&lt;int&gt; GenerateRandomNumbers(
+    [EnumeratorCancellation] CancellationToken cancellationToken)
+{
+    var random = new Random();
+    
+    while (!cancellationToken.IsCancellationRequested)
+    {
+        yield return random.Next(1, 1000);
+        await Task.Delay(1000, cancellationToken);
+    }
+}
+        </div>
+        
+        <h3>2. Client-Side (JavaScript)</h3>
+        <div class="code-example">
+// Connect to SSE endpoint
+const eventSource = new EventSource('/api/randomnumbers');
+
+// Listen for messages
+eventSource.onmessage = function(event) {
+    const number = event.data;
+    document.getElementById('numberDisplay').textContent = number;
+};
+
+// Handle connection events
+eventSource.onopen = () => console.log('Connected');
+eventSource.onerror = () => console.log('Connection error');
+        </div>
+        
+        <p><strong>That's it!</strong> Just a few lines of code for real-time streaming. 🚀</p>
+        
+        <a href="/" class="nav-link">→ See Advanced Demo with Reconnection & Multi-User Support</a>
+    </div>
+
+<script>
+    let count = 0;
+    const numberDisplay = document.getElementById('numberDisplay');
+    const statusDiv = document.getElementById('status');
+    const countSpan = document.getElementById('count');
+
+    // Connect to the SSE endpoint
+    const eventSource = new EventSource('/api/randomnumbers');
+
+    // Handle successful connection
+    eventSource.onopen = function() {
+        statusDiv.textContent = 'Connected to SSE stream';
+        statusDiv.className = 'status connected';
+        console.log('SSE connection opened');
+    };
+
+    // Handle incoming messages
+    eventSource.onmessage = function(event) {
+        const randomNumber = event.data;
+        
+        // Update the display
+        numberDisplay.textContent = randomNumber;
+        numberDisplay.classList.add('updated');
+        
+        // Remove the animation class after a short delay
+        setTimeout(() => {
+            numberDisplay.classList.remove('updated');
+        }, 300);
+        
+        // Update counter
+        count++;
+        countSpan.textContent = count;
+        
+        console.log('Received random number:', randomNumber);
+    };
+
+    // Handle connection errors
+    eventSource.onerror = function(error) {
+        statusDiv.textContent = 'Connection error - will automatically retry';
+        statusDiv.className = 'status disconnected';
+        console.error('SSE connection error:', error);
+    };
+
+    // Clean up on page unload
+    window.addEventListener('beforeunload', function() {
+        if (eventSource) {
+            eventSource.close();
+        }
+    });
+</script>
+</body>
+</html>

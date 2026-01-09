@@ -1,0 +1,47 @@
+### ASP.NET Core 10 SSE Demo - HTTP Tests
+### Test the Server-Sent Events endpoints directly
+
+@host = http://localhost:5000
+
+### Test SSE connection for user Alice
+GET {{host}}/api/task-progress/alice
+Accept: text/event-stream
+
+### Test SSE connection with Last-Event-ID (reconnection simulation)
+GET {{host}}/api/task-progress/bob
+Accept: text/event-stream
+Last-Event-ID: 2025-09-02T10:30:45.123Z
+
+### Start a task for Alice
+POST {{host}}/api/tasks/alice/start
+Content-Type: application/json
+
+{
+  "taskName": "Data Processing",
+  "estimatedDuration": 15
+}
+
+### Start a task for Bob
+POST {{host}}/api/tasks/bob/start
+Content-Type: application/json
+
+{
+  "taskName": "Report Generation", 
+  "estimatedDuration": 10
+}
+
+### Get active users count
+GET {{host}}/api/users/active
+
+### Test with Charlie (concurrent user)
+POST {{host}}/api/tasks/charlie/start
+Content-Type: application/json
+
+{
+  "taskName": "Database Backup",
+  "estimatedDuration": 20
+}
+
+### SSE stream for Charlie
+GET {{host}}/api/task-progress/charlie
+Accept: text/event-stream

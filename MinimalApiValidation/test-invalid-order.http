@@ -1,0 +1,71 @@
+### Test invalid order (missing required fields, invalid email)
+POST http://localhost:5000/orders
+Content-Type: application/json
+
+{
+  "Product": "",
+  "Quantity": 0,
+  "CustomerEmail": "not-an-email",
+  "Address": {
+    "Street": "",
+    "City": ""
+  }
+}
+
+### Test invalid street
+POST http://localhost:5000/orders
+Content-Type: application/json
+
+{
+  "Product": "Test",
+  "Quantity": 10,
+  "CustomerEmail": "test@test.com",
+  "Address": {
+    "Street": "Samplestreet",
+    "City": "Samplecity"
+  }
+}
+
+### Test missing Address (Address property omitted)
+POST http://localhost:5000/orders
+Content-Type: application/json
+
+{
+  "Product": "Valid Product",
+  "Quantity": 10,
+  "CustomerEmail": "customer@example.com"
+}
+
+### Test valid order (composite DTO) - should return 201 Created
+POST http://localhost:5000/orders
+Content-Type: application/json
+
+{
+  "Product": "Valid Product",
+  "Quantity": 10,
+  "CustomerEmail": "customer@example.com",
+  "Address": {
+    "Street": "1 Main St",
+    "City": "Town"
+  }
+}
+
+### Test valid order (record-based endpoint) - should return 201 Created
+POST http://localhost:5000/orders/simple
+Content-Type: application/json
+
+{
+  "Product": "Widget",
+  "Quantity": 5,
+  "CustomerEmail": "a@b.com"
+}
+
+### Test invalid order (record-based endpoint) - should return 400 with validation errors
+POST http://localhost:5000/orders/simple
+Content-Type: application/json
+
+{
+  "Product": "",
+  "Quantity": 0,
+  "CustomerEmail": "not-an-email"
+}

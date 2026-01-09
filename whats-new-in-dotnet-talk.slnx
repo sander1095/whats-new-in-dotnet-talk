@@ -4,4 +4,12 @@
         <Project Path="Aspire/AspireWithNode.AspNetCoreApi/AspireWithNode.AspNetCoreApi.csproj" />
         <Project Path="Aspire/AspireWithNode.ServiceDefaults/AspireWithNode.ServiceDefaults.csproj" />
     </Folder>
+    <Project Path="OpenApi/OpenApi.csproj" />
+    <Project Path="SSE/SSEDemo.csproj" />
+    <Project Path="CSharp14/CSharp14.csproj" />
+    <Project Path="MinimalApiValidation/MinimalApiValidation.csproj" />
+
+    <Folder Name="/Solution Items/">
+        <File Path="README.MD" />
+    </Folder>
 </Solution>
