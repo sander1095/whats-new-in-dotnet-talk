@@ -1,0 +1,17 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Aspire",
+  "steps": [
+    {
+      "file": "whats-new-in-dotnet-talk.slnx",
+      "title": "SLNX format",
+      "description": "Before we talk about Aspire, let's talk about the new solution format!\r\n\r\nThe old sln format was bloated and ugly. The new one, `slnx`, is a lot cleaner and easier to manage\r\n\r\nTo compare:\r\n\r\n```dotnetcli\r\ndotnet new sln\r\ndotnet sln whats-new-in-dotnet-talk.sln add Aspire/AspireWithNode.AppHost\r\n```\r\n",
+      "line": 1
+    },
+    {
+      "file": "Aspire/AspireWithNode.AppHost/Properties/launchSettings.json",
+      "description": "One thing you might notice is the new URL! \r\n\r\nASP.NET COre now has support for the `localhost` domain. So instead of having to remember port numbers, it's a lost easier to have subdomains instead!",
+      "line": 8
+    }
+  ]
+}
